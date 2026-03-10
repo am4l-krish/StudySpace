@@ -24,4 +24,5 @@ Thumbs.db
 
 # Editor
 .vscode/
-.idea/node_modules.zip
+.idea/
+node_modules.zip
