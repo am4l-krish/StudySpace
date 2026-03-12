@@ -1,4 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { collection, addDoc, onSnapshot, deleteDoc, doc, query, where } from 'firebase/firestore'
+import { db } from '../firebase'
+import { useAuth } from '../context/AuthContext'
 
 function Schedule() {
   const [classes, setClasses] = useState([])
@@ -7,22 +10,37 @@ function Schedule() {
   const [startTime, setStartTime] = useState('')
   const [endTime, setEndTime] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
 
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const timeSlots = ['8:00', '9:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00']
 
-  const addClass = () => {
+  useEffect(() => {
+    if (!user) return
+    const q = query(collection(db, 'schedule'), where('uid', '==', user.uid))
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setClasses(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      setLoading(false)
+    })
+    return unsubscribe
+  }, [user])
+
+  const addClass = async () => {
     if (!subject.trim()) return
     const slotHour = startTime ? startTime.split(':')[0] : '8'
-    const entry = { id: Date.now(), subject, day, startTime, endTime, slotHour }
-    setClasses(prev => [...prev, entry])
+    await addDoc(collection(db, 'schedule'), {
+      subject, day, startTime, endTime, slotHour, uid: user.uid
+    })
     setSubject('')
     setStartTime('')
     setEndTime('')
     setShowForm(false)
   }
 
-  const deleteClass = (id) => setClasses(prev => prev.filter(c => c.id !== id))
+  const deleteClass = async (id) => {
+    await deleteDoc(doc(db, 'schedule', id))
+  }
 
   const getClass = (d, slot) => {
     const slotHour = slot.split(':')[0]
@@ -66,22 +84,16 @@ function Schedule() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '10px', color: '#4b5563', letterSpacing: '1px', textTransform: 'uppercase' }}>Day</label>
-            <select
-              value={day}
-              onChange={e => setDay(e.target.value)}
-              style={{ padding: '9px 12px', borderRadius: '2px', border: '1px solid #2a1f6e', background: '#0a0a18', color: '#a78bfa', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}
-            >
+            <select value={day} onChange={e => setDay(e.target.value)}
+              style={{ padding: '9px 12px', borderRadius: '2px', border: '1px solid #2a1f6e', background: '#0a0a18', color: '#a78bfa', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}>
               {days.map(d => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '10px', color: '#4b5563', letterSpacing: '1px', textTransform: 'uppercase' }}>Start</label>
-            <select
-              value={startTime}
-              onChange={e => setStartTime(e.target.value)}
-              style={{ padding: '9px 12px', borderRadius: '2px', border: '1px solid #2a1f6e', background: '#0a0a18', color: '#a78bfa', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}
-            >
+            <select value={startTime} onChange={e => setStartTime(e.target.value)}
+              style={{ padding: '9px 12px', borderRadius: '2px', border: '1px solid #2a1f6e', background: '#0a0a18', color: '#a78bfa', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}>
               <option value="">Select</option>
               {timeSlots.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -89,23 +101,24 @@ function Schedule() {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '10px', color: '#4b5563', letterSpacing: '1px', textTransform: 'uppercase' }}>End</label>
-            <select
-              value={endTime}
-              onChange={e => setEndTime(e.target.value)}
-              style={{ padding: '9px 12px', borderRadius: '2px', border: '1px solid #2a1f6e', background: '#0a0a18', color: '#a78bfa', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}
-            >
+            <select value={endTime} onChange={e => setEndTime(e.target.value)}
+              style={{ padding: '9px 12px', borderRadius: '2px', border: '1px solid #2a1f6e', background: '#0a0a18', color: '#a78bfa', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}>
               <option value="">Select</option>
               {timeSlots.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
 
-          <button
-            onClick={addClass}
-            style={{ padding: '9px 20px', borderRadius: '2px', background: 'linear-gradient(135deg, #5b21b6, #7c3aed)', color: 'white', border: 'none', fontSize: '12px', cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '1px' }}
-          >
-            Add
-          </button>
+          <button onClick={addClass} style={{
+            padding: '9px 20px', borderRadius: '2px',
+            background: 'linear-gradient(135deg, #5b21b6, #7c3aed)',
+            color: 'white', border: 'none', fontSize: '12px',
+            cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '1px'
+          }}>Add</button>
         </div>
+      )}
+
+      {loading && (
+        <p style={{ opacity: 0.4, fontSize: '13px', letterSpacing: '1px', fontFamily: 'Cinzel, serif' }}>⚡ Loading schedule...</p>
       )}
 
       <div style={{ overflowX: 'auto' }}>

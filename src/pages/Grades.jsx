@@ -1,9 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { collection, addDoc, onSnapshot, deleteDoc, doc, query, where } from 'firebase/firestore'
+import { db } from '../firebase'
+import { useAuth } from '../context/AuthContext'
 
 function Grades() {
   const [grades, setGrades] = useState([])
   const [subject, setSubject] = useState('')
   const [mark, setMark] = useState('')
+  const [loading, setLoading] = useState(true)
+  const { user } = useAuth()
+
+  useEffect(() => {
+    if (!user) return
+    const q = query(collection(db, 'grades'), where('uid', '==', user.uid))
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setGrades(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })))
+      setLoading(false)
+    })
+    return unsubscribe
+  }, [user])
 
   const getGrade = (mark) => {
     if (mark >= 90) return { letter: 'O', point: 10 }
@@ -15,17 +30,21 @@ function Grades() {
     return { letter: 'F', point: 0 }
   }
 
-  const addGrade = () => {
+  const addGrade = async () => {
     if (!subject.trim() || !mark) return
     const m = Number(mark)
     if (m < 0 || m > 100) return alert('Mark must be between 0 and 100')
     const { letter, point } = getGrade(m)
-    setGrades([...grades, { id: Date.now(), subject, mark: m, letter, point }])
+    await addDoc(collection(db, 'grades'), {
+      subject, mark: m, letter, point, uid: user.uid, createdAt: new Date()
+    })
     setSubject('')
     setMark('')
   }
 
-  const deleteGrade = (id) => setGrades(grades.filter(g => g.id !== id))
+  const deleteGrade = async (id) => {
+    await deleteDoc(doc(db, 'grades', id))
+  }
 
   const cgpa = grades.length
     ? (grades.reduce((sum, g) => sum + g.point, 0) / grades.length).toFixed(2)
@@ -45,49 +64,22 @@ function Grades() {
     <div style={{ padding: '20px' }}>
       <h1 className="page-title">Grades & CGPA</h1>
 
-      {/* CGPA Card */}
       {cgpa && (
         <div style={{
-          background: '#1e1e2e', color: 'white', borderRadius: '12px',
-          padding: '20px', marginBottom: '24px', display: 'inline-block', minWidth: '200px'
+          background: 'linear-gradient(135deg, #0d0d1f, #10102a)',
+          border: '1px solid #2a1f6e', borderRadius: '4px',
+          padding: '20px', marginBottom: '24px', display: 'inline-block', minWidth: '200px',
+          clipPath: 'polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 14px 100%, 0 calc(100% - 14px))',
+          position: 'relative'
         }}>
-          <div style={{ fontSize: '14px', opacity: 0.6, marginBottom: '4px' }}>Current CGPA</div>
-          <div style={{ fontSize: '48px', fontWeight: 'bold', color: '#4f46e5' }}>{cgpa}</div>
-          <div style={{ fontSize: '13px', opacity: 0.5 }}>out of 10.0</div>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, #7c3aed, #06b6d4, transparent)' }} />
+          <div style={{ fontSize: '10px', color: '#4b5563', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Current CGPA</div>
+          <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '48px', fontWeight: '700', color: '#a78bfa', textShadow: '0 0 16px rgba(167,139,250,0.5)' }}>{cgpa}</div>
+          <div style={{ fontSize: '11px', color: '#4b5563', letterSpacing: '1px' }}>out of 10.0</div>
         </div>
       )}
 
-      {/* Add Grade */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
-        <input
-          type="text"
-          placeholder="Subject name"
-          value={subject}
-          onChange={e => setSubject(e.target.value)}
-          style={{
-            flex: 1, minWidth: '160px', padding: '10px 14px',
-            borderRadius: '8px', border: '1px solid #ccc', fontSize: '15px'
-          }}
-        />
-        <input
-          type="number"
-          placeholder="Mark (0-100)"
-          value={mark}
-          onChange={e => setMark(e.target.value)}
-          style={{
-            width: '140px', padding: '10px 14px',
-            borderRadius: '8px', border: '1px solid #ccc', fontSize: '15px'
-          }}
-        />
-        <button onClick={addGrade} style={{
-          padding: '10px 20px', borderRadius: '8px',
-          background: '#4f46e5', color: 'white', border: 'none', fontSize: '15px', cursor: 'pointer'
-        }}>
-          Add
-        </button>
-      </div>
-
-      {/* Grade Scale Reference */}
+      {/* Grade Scale */}
       <div style={{ marginBottom: '20px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
         {[
           { label: 'O ≥90', color: '#22c55e' },
@@ -100,39 +92,59 @@ function Grades() {
         ].map(({ label, color }) => (
           <span key={label} style={{
             background: color + '22', color, border: `1px solid ${color}`,
-            borderRadius: '6px', padding: '3px 10px', fontSize: '12px', fontWeight: 'bold'
+            borderRadius: '2px', padding: '3px 10px', fontSize: '11px',
+            fontFamily: 'Cinzel, serif', letterSpacing: '1px'
           }}>{label}</span>
         ))}
       </div>
 
-      {/* Grades List */}
-      {grades.length === 0 && (
-        <p style={{ opacity: 0.5 }}>No grades yet. Add a subject above! 📚</p>
-      )}
+      {/* Add Grade */}
+      <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
+        <input
+          type="text"
+          placeholder="Subject name"
+          value={subject}
+          onChange={e => setSubject(e.target.value)}
+          style={{ flex: 1, minWidth: '160px', padding: '10px 14px', borderRadius: '2px', border: '1px solid #2a1f6e', background: 'rgba(124,58,237,0.05)', color: '#e0e0ff', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}
+        />
+        <input
+          type="number"
+          placeholder="Mark (0-100)"
+          value={mark}
+          onChange={e => setMark(e.target.value)}
+          style={{ width: '140px', padding: '10px 14px', borderRadius: '2px', border: '1px solid #2a1f6e', background: 'rgba(124,58,237,0.05)', color: '#e0e0ff', fontSize: '13px', fontFamily: 'Cinzel, serif', outline: 'none' }}
+        />
+        <button onClick={addGrade} style={{
+          padding: '10px 20px', borderRadius: '2px',
+          background: 'linear-gradient(135deg, #5b21b6, #7c3aed)',
+          color: 'white', border: 'none', fontSize: '12px',
+          cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '1px'
+        }}>Add</button>
+      </div>
+
+      {loading ? (
+        <p style={{ opacity: 0.4, fontSize: '13px', letterSpacing: '1px', fontFamily: 'Cinzel, serif' }}>⚡ Loading grades...</p>
+      ) : grades.length === 0 ? (
+        <p style={{ opacity: 0.4, fontSize: '13px', letterSpacing: '1px' }}>No grades yet. Add a subject above! 📚</p>
+      ) : null}
 
       {grades.map(g => (
         <div key={g.id} style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '14px 16px', marginBottom: '8px',
-          background: '#1e1e2e', borderRadius: '8px', color: 'white'
+          background: 'linear-gradient(135deg, #0d0d1f, #10102a)',
+          border: '1px solid #2a1f6e', borderLeft: `3px solid ${gradeColor(g.letter)}`,
+          borderRadius: '4px'
         }}>
-          <div style={{ flex: 1, fontSize: '15px' }}>{g.subject}</div>
-          <div style={{ fontSize: '14px', opacity: 0.6 }}>{g.mark}/100</div>
-          <div style={{
-            fontWeight: 'bold', fontSize: '16px',
-            color: gradeColor(g.letter), minWidth: '36px', textAlign: 'center'
-          }}>
-            {g.letter}
-          </div>
-          <div style={{ fontSize: '14px', opacity: 0.6, minWidth: '40px', textAlign: 'center' }}>
-            {g.point}/10
-          </div>
+          <div style={{ flex: 1, fontSize: '14px', color: '#e0d0ff', fontFamily: 'Cinzel, serif' }}>{g.subject}</div>
+          <div style={{ fontSize: '13px', color: '#4b5563' }}>{g.mark}/100</div>
+          <div style={{ fontWeight: 'bold', fontSize: '16px', color: gradeColor(g.letter), minWidth: '36px', textAlign: 'center', textShadow: `0 0 8px ${gradeColor(g.letter)}` }}>{g.letter}</div>
+          <div style={{ fontSize: '13px', color: '#4b5563', minWidth: '40px', textAlign: 'center' }}>{g.point}/10</div>
           <button onClick={() => deleteGrade(g.id)} style={{
-            background: '#ef4444', color: 'white', border: 'none',
-            borderRadius: '6px', padding: '5px 12px', cursor: 'pointer', fontSize: '13px'
-          }}>
-            Delete
-          </button>
+            background: 'rgba(220,38,38,0.2)', color: '#f87171',
+            border: 'none', borderRadius: '2px',
+            padding: '4px 10px', cursor: 'pointer', fontSize: '11px'
+          }}>✕</button>
         </div>
       ))}
     </div>
