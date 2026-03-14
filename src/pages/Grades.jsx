@@ -74,7 +74,7 @@ function Grades() {
         }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '1px', background: 'linear-gradient(90deg, transparent, #7c3aed, #06b6d4, transparent)' }} />
           <div style={{ fontSize: '10px', color: '#4b5563', letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '4px' }}>Current CGPA</div>
-          <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '48px', fontWeight: '700', color: '#a78bfa', textShadow: '0 0 16px rgba(167,139,250,0.5)' }}>{cgpa}</div>
+          <div style={{ fontFamily: 'Cinzel Decorative, serif', fontSize: '48px', fontWeight: '700', color: '#a78bfa', textShadow: '0 0 16px rgba(167,139,250,0.5)' }}>{cgpa}</div>
           <div style={{ fontSize: '11px', color: '#4b5563', letterSpacing: '1px' }}>out of 10.0</div>
         </div>
       )}
@@ -99,7 +99,7 @@ function Grades() {
       </div>
 
       {/* Add Grade */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
+      <div className="grades-form" style={{ display: 'flex', gap: '10px', marginBottom: '24px', flexWrap: 'wrap' }}>
         <input
           type="text"
           placeholder="Subject name"

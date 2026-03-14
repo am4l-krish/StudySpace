@@ -442,3 +442,59 @@ body {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+@media (max-width: 768px) {
+  .ai-page {
+    height: calc(100vh - 92px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* General padding fix */
+  .main-content {
+    padding: 64px 16px 16px !important;
+  }
+
+  /* Page title smaller */
+  .page-title {
+    font-size: 16px !important;
+  }
+
+  /* Schedule table scrollable */
+  .schedule-table {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Grades form stack vertically */
+  .grades-form {
+    flex-direction: column !important;
+  }
+
+  /* Materials form stack vertically */
+  .materials-form {
+    flex-direction: column !important;
+  }
+
+  /* AI page input fix */
+  .ai-page {
+    height: calc(100vh - 92px) !important;
+    padding: 8px !important;
+  }
+
+  /* Stat cards 2 column */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Auth card padding */
+  .auth-card {
+    margin: 16px;
+    padding: 24px !important;
+  }
+
+  /* Pomodoro center */
+  .pomodoro-page {
+    text-align: center;
+  }
+}
