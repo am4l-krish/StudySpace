@@ -357,7 +357,7 @@ body {
   font-family: 'Cinzel', serif;
   cursor: pointer;
   color: #4b5563;
-  transition: all 0.2s;
+  
   letter-spacing: 1.5px;
   text-transform: uppercase;
   font-weight: 600;
@@ -485,18 +485,7 @@ body {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
-
-  /* Grades form stack vertically */
-  .grades-form {
-    flex-direction: column !important;
-  }
-
-  /* Materials form stack vertically */
-  .materials-form {
-    flex-direction: column !important;
-  }
-
-  /* AI page input fix */
+    /* AI page input fix */
   .ai-page {
     height: calc(100vh - 92px) !important;
     padding: 8px !important;
@@ -513,7 +502,4 @@ body {
     padding: 24px !important;
   }
 
-  /* Pomodoro center */
-  .pomodoro-page {
-    text-align: center;
-  }
+  
