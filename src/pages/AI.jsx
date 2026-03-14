@@ -50,7 +50,7 @@ function AI() {
   }
 
   return (
-    <div style={{ padding: '20px', height: 'calc(100vh - 40px)', display: 'flex', flexDirection: 'column' }}>
+    <div className="ai-page" style={{ padding: '20px', height: 'calc(100vh - 40px)', display: 'flex', flexDirection: 'column' }}>
       <h1 className="page-title">AI Assistant</h1>
 
       <div style={{

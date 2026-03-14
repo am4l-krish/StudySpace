@@ -69,9 +69,11 @@ function Schedule() {
           background: 'linear-gradient(135deg, #0d0d1f, #10102a)',
           border: '1px solid #2a1f6e', borderRadius: '4px',
           padding: '20px', marginBottom: '24px',
-          display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'flex-end'
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: '10px', alignItems: 'flex-end'
         }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', flex: 2, minWidth: '140px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <label style={{ fontSize: '10px', color: '#4b5563', letterSpacing: '1px', textTransform: 'uppercase' }}>Subject</label>
             <input
               type="text"
@@ -112,7 +114,8 @@ function Schedule() {
             padding: '9px 20px', borderRadius: '2px',
             background: 'linear-gradient(135deg, #5b21b6, #7c3aed)',
             color: 'white', border: 'none', fontSize: '12px',
-            cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '1px'
+            cursor: 'pointer', fontFamily: 'Cinzel, serif', letterSpacing: '1px',
+            alignSelf: 'flex-end'
           }}>Add</button>
         </div>
       )}
@@ -121,11 +124,11 @@ function Schedule() {
         <p style={{ opacity: 0.4, fontSize: '13px', letterSpacing: '1px', fontFamily: 'Cinzel, serif' }}>⚡ Loading schedule...</p>
       )}
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '600px' }}>
+      <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '500px' }}>
           <thead>
             <tr>
-              <th style={{ padding: '10px', fontSize: '10px', color: '#4b5563', letterSpacing: '2px', textTransform: 'uppercase', border: '1px solid #1e1a4a', background: '#0a0a18', width: '70px', fontFamily: 'Cinzel, serif' }}>Time</th>
+              <th style={{ padding: '10px', fontSize: '10px', color: '#4b5563', letterSpacing: '2px', textTransform: 'uppercase', border: '1px solid #1e1a4a', background: '#0a0a18', width: '52px', fontFamily: 'Cinzel, serif' }}>Time</th>
               {days.map(d => (
                 <th key={d} style={{ padding: '10px', fontSize: '11px', color: '#a78bfa', letterSpacing: '2px', textTransform: 'uppercase', border: '1px solid #1e1a4a', background: '#0a0a18', fontFamily: 'Cinzel, serif' }}>{d}</th>
               ))}
@@ -134,16 +137,16 @@ function Schedule() {
           <tbody>
             {timeSlots.map(slot => (
               <tr key={slot}>
-                <td style={{ padding: '8px 10px', fontSize: '11px', color: '#4b5563', border: '1px solid #1e1a4a', background: '#0a0a18', textAlign: 'center', fontFamily: 'Cinzel, serif' }}>{slot}</td>
+                <td style={{ padding: '8px 4px', fontSize: '10px', color: '#4b5563', border: '1px solid #1e1a4a', background: '#0a0a18', textAlign: 'center', fontFamily: 'Cinzel, serif' }}>{slot}</td>
                 {days.map(d => {
                   const cls = getClass(d, slot)
                   return (
                     <td key={d} style={{ padding: '4px', border: '1px solid #1e1a4a', background: cls ? 'rgba(124,58,237,0.08)' : '#07070f', height: '48px', verticalAlign: 'top' }}>
                       {cls && (
-                        <div style={{ background: 'linear-gradient(135deg, #5b21b6, #7c3aed)', borderRadius: '2px', padding: '6px 8px', position: 'relative', height: '100%', boxShadow: '0 0 10px rgba(124,58,237,0.3)' }}>
-                          <div style={{ fontSize: '11px', color: '#fff', fontFamily: 'Cinzel, serif' }}>{cls.subject}</div>
-                          {cls.endTime && <div style={{ fontSize: '9px', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>{cls.startTime} - {cls.endTime}</div>}
-                          <button onClick={() => deleteClass(cls.id)} style={{ position: 'absolute', top: '3px', right: '3px', background: 'rgba(0,0,0,0.3)', color: '#fff', border: 'none', borderRadius: '2px', width: '14px', height: '14px', fontSize: '8px', cursor: 'pointer' }}>✕</button>
+                        <div style={{ background: 'linear-gradient(135deg, #5b21b6, #7c3aed)', borderRadius: '2px', padding: '4px 6px', position: 'relative', height: '100%', boxShadow: '0 0 10px rgba(124,58,237,0.3)' }}>
+                          <div style={{ fontSize: '10px', color: '#fff', fontFamily: 'Cinzel, serif', paddingRight: '14px' }}>{cls.subject}</div>
+                          {cls.endTime && <div style={{ fontSize: '8px', color: 'rgba(255,255,255,0.6)', marginTop: '2px' }}>{cls.startTime}-{cls.endTime}</div>}
+                          <button onClick={() => deleteClass(cls.id)} style={{ position: 'absolute', top: '2px', right: '2px', background: 'rgba(0,0,0,0.3)', color: '#fff', border: 'none', borderRadius: '2px', width: '13px', height: '13px', fontSize: '7px', cursor: 'pointer' }}>✕</button>
                         </div>
                       )}
                     </td>
