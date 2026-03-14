@@ -13,6 +13,7 @@ import Login from './pages/Login.jsx'
 function AppContent() {
   const { user } = useAuth()
   const [activePage, setActivePage] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   if (!user) return <Login />
 
@@ -26,9 +27,31 @@ function AppContent() {
     if (activePage === 'ai') return <AI />
   }
 
+  const handleNavClick = (page) => {
+    setActivePage(page)
+    setSidebarOpen(false)
+  }
+
   return (
     <div className="app-layout">
-      <Sidebar activePage={activePage} setActivePage={setActivePage} />
+      {/* Mobile top bar */}
+      <div className="mobile-topbar">
+        <button className="hamburger" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+        <span className="mobile-logo">SideQuest</span>
+      </div>
+
+      {/* Overlay when sidebar is open on mobile */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <Sidebar
+        activePage={activePage}
+        setActivePage={handleNavClick}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+
       <main className="main-content">
         {renderPage()}
       </main>

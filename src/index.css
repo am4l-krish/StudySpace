@@ -368,3 +368,77 @@ body {
   color: #f87171;
   border-color: rgba(220,38,38,0.4);
 }
+
+/* Mobile topbar */
+.mobile-topbar {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  background: #0a0a18;
+  border-bottom: 1px solid #2a1f6e;
+  align-items: center;
+  padding: 0 16px;
+  gap: 16px;
+  z-index: 100;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  color: #a78bfa;
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.mobile-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 16px;
+  color: #a78bfa;
+  letter-spacing: 2px;
+}
+
+/* Overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 150;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .mobile-topbar {
+    display: flex;
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -240px;
+    top: 0;
+    height: 100vh;
+    z-index: 200;
+    transition: left 0.3s ease;
+  }
+
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding-top: 52px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}

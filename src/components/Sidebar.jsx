@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext'
 
-function Sidebar({ activePage, setActivePage }) {
+function Sidebar({ activePage, setActivePage, isOpen, onClose }) {
   const { user, logout } = useAuth()
 
   const navItems = [
@@ -14,7 +14,7 @@ function Sidebar({ activePage, setActivePage }) {
   ]
 
   return (
-    <nav className="sidebar">
+    <nav className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
       <div className="logo">
         <h2>SideQuest</h2>
       </div>
@@ -26,6 +26,7 @@ function Sidebar({ activePage, setActivePage }) {
           onClick={() => setActivePage(item.id)}
         >
           <span>{item.label}</span>
+          {activePage === item.id && <span>▶</span>}
         </div>
       ))}
 
