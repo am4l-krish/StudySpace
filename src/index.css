@@ -449,7 +449,7 @@ body {
   }
 }
 
-@@media (max-width: 768px) {
+@media (max-width: 768px) {
   .app-layout {
     display: block !important;
   }
@@ -517,4 +517,3 @@ body {
   .pomodoro-page {
     text-align: center;
   }
-}
