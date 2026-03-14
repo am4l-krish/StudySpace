@@ -449,11 +449,31 @@ body {
   }
 }
 
-@media (max-width: 768px) {
-  /* General padding fix */
-  .main-content {
-    padding: 64px 16px 16px !important;
+@@media (max-width: 768px) {
+  .app-layout {
+    display: block !important;
   }
+
+  .sidebar {
+    position: fixed;
+    left: -240px;
+    top: 0;
+    height: 100vh;
+    z-index: 200;
+    transition: left 0.3s ease;
+    width: 230px;
+  }
+
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding: 64px 16px 16px !important;
+    width: 100% !important;
+  }
+}
 
   /* Page title smaller */
   .page-title {
