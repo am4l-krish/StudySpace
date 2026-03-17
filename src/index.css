@@ -1,8 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&display=swap');
-* { margin: 0; padding: 0; box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800;900&family=Cinzel+Decorative:wght@400;700;900&display=swap');* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  font-family: 'Cinzel', serif;
+    font-family: 'Exo 2', sans-serif;
   background: #07070f;
   color: #e0e0ff;
 }
