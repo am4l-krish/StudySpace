@@ -18,7 +18,6 @@ function Sidebar({ activePage, setActivePage, isOpen, onClose }) {
     <nav className={`sidebar ${isOpen ? 'sidebar-open' : ''}`}>
       <div className="logo">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <img src={sqlogo} alt="SideQuest" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
           <h2>SideQuest</h2>
         </div>
       </div>
