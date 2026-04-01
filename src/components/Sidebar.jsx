@@ -1,5 +1,5 @@
 import { useAuth } from '../context/AuthContext'
-import sqlogo from '../assets/sqlogo.png'
+
 
 function Sidebar({ activePage, setActivePage, isOpen, onClose }) {
   const { user, logout } = useAuth()
